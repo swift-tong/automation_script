@@ -1,0 +1,212 @@
+From 2eb52b3b1d0cccbd4eab686fea898bdccd1f75c5 Mon Sep 17 00:00:00 2001
+From: wangguohai <alex.wang@rock-chips.com>
+Date: Tue, 25 Oct 2016 09:18:05 +0800
+Subject: [PATCH] modify for G-120WT-P of NSB
+
+---
+ arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts | 127 ++++++++++++++++++++++++---
+ arch/arm/boot/dts/rk322x-sdk.dtsi            |   8 +-
+ 2 files changed, 121 insertions(+), 14 deletions(-)
+ mode change 100644 => 100755 arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts
+ mode change 100644 => 100755 arch/arm/boot/dts/rk322x-sdk.dtsi
+
+diff --git a/arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts b/arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts
+old mode 100644
+new mode 100755
+index 38b4b0d..2239802
+--- a/arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts
++++ b/arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts
+@@ -12,7 +12,8 @@
+ 	};
+ 
+ 	wireless-wlan {
+-		wifi_chip_type = "rtl8188fu";
++		wifi_chip_type = "rtl8188eu";
++        WIFI,poweren_gpio = <&gpio3 GPIO_D3 GPIO_ACTIVE_LOW>;
+ 	};
+ 
+ 	wireless-bluetooth {
+@@ -21,11 +22,11 @@
+ 
+ 	cmcc_power_led {
+ 		compatible = "cmcc_led_driver";
+-		net_rk_power1,pin =<&gpio2 GPIO_B6 GPIO_ACTIVE_HIGH>;
+-		net_rk_power2,pin =<&gpio2 GPIO_B0 GPIO_ACTIVE_LOW>;
+-		ir_rk_power1,pin =<&gpio0 GPIO_C1 GPIO_ACTIVE_LOW>;
+-		suspend_rk_power1,pin =<&gpio3 GPIO_C5 GPIO_ACTIVE_HIGH>;
+-		suspend_rk_power2,pin =<&gpio3 GPIO_C7 GPIO_ACTIVE_LOW>;
++		net_rk_power1,pin =<&gpio2 GPIO_B6 GPIO_ACTIVE_HIGH>;		
++		net_rk_power2,pin =<&gpio2 GPIO_B0 GPIO_ACTIVE_HIGH>;
++		ir_rk_power1,pin =<&gpio3 GPIO_C6 GPIO_ACTIVE_LOW>;
++		suspend_rk_power1,pin =<&gpio3 GPIO_C7 GPIO_ACTIVE_HIGH>;
++		suspend_rk_power2,pin =<&gpio1 GPIO_A0 GPIO_ACTIVE_HIGH>;
+ 		status = "okay";       
+ 	};
+ 
+@@ -90,11 +91,11 @@
+ 
+ &pwm3 {
+ 	compatible = "cmcc,remotectl-pwm";
+-	remote-gpios = <&gpio0 GPIO_C1 GPIO_ACTIVE_LOW>;
+-	suspend-gpios1 = <&gpio3 GPIO_C5 GPIO_ACTIVE_HIGH>;
+-	suspend-gpios2 = <&gpio3 GPIO_C7 GPIO_ACTIVE_LOW>;
++	remote-gpios = <&gpio3 GPIO_C6 GPIO_ACTIVE_LOW>;
++	suspend-gpios1 = <&gpio3 GPIO_C7 GPIO_ACTIVE_HIGH>;
++	suspend-gpios2 = <&gpio1 GPIO_A0 GPIO_ACTIVE_HIGH>;
+ 	net-gpios1 = <&gpio2 GPIO_B6 GPIO_ACTIVE_HIGH>;
+-	net-gpios2 = <&gpio2 GPIO_B0 GPIO_ACTIVE_LOW>;
++	net-gpios2 = <&gpio2 GPIO_B0 GPIO_ACTIVE_HIGH>;
+ 
+ 	/* for IPTV */
+ 	ir_key3 {
+@@ -351,6 +352,112 @@
+ 		rockchip,key_table =
+ 			<0xf7	KEY_POWER>;
+ 	};
++	
++		/*for BJLT IPTV*/
++	ir_key10{
++		rockchip,usercode = <0x3bc4>;
++		rockchip,key_table =
++			<0x81	KEY_REPLY>,
++			<0x80	KEY_BACK>,
++			<0x85	KEY_UP>,
++			<0x87	KEY_DOWN>,
++			<0x84	KEY_LEFT>,
++			<0x86	KEY_RIGHT>,
++			<0x99	KEY_VOLUMEUP>,
++			<0x9a	KEY_VOLUMEDOWN>,
++			<0x96	KEY_POWER>,
++			<0x9b	KEY_MUTE>,
++			<0x89	KEY_1>,
++			<0x8a	KEY_2>,
++			<0x8b	KEY_3>,
++			<0x8c	KEY_4>,
++			<0x8d	KEY_5>,
++			<0x8e	KEY_6>,
++			<0x8f	KEY_7>,
++			<0x90	KEY_8>,
++			<0x91	KEY_9>,
++			<0x88	KEY_0>,
++			<0x83	KEY_PAGEDOWN>,
++			<0x82	KEY_PAGEUP>,
++			<0x95	KEY_SETUP>,
++			<0x97	KEY_CHANNEL_UP>,
++			<0x98	KEY_CHANNEL_DN>,
++			<0xc6	KEY_LOCAL>,
++			<0xd6	KEY_HOME_PAGE>,
++			<0xd7	KEY_TRACK>,
++			<0xcc	KEY_CH_CUT_BACK>,
++			<0xc3	KEY_INTERX>,
++			<0xd1	KEY_DIRECT_SEEDING>,
++			<0xd2	KEY_REVIEW>,
++			<0xd3	KEY_ON_DEMAND>,
++			<0xd4	KEY_INFO1>,
++			<0xc7	KEY_DIRECT_SEEDING>,
++			<0xc8	KEY_REVIEW>,
++			<0xc9	KEY_ON_DEMAND>,
++			<0xca	KEY_INFO1>,
++			<0xcd	KEY_FAVORITE>,
++			<0xce	KEY_CHANNEL_POS>,
++			<0xcf	KEY_HELP>,
++			<0xd0	KEY_EVENT>,
++			<0x9c	KEY_SOUND1>,
++			<0x93	KEY_X1>,
++			<0x92	KEY_X2>,
++			<0xc0	KEY_END>,
++			<0xc1	KEY_GO_BEGINNING>,
++			<0x9d	KEY_PLAYPAUSE>,
++			<0xc4	KEY_STOP>,
++			<0x94	KEY_EQUAL>,
++			<0x9e	KEY_YELLOW>,
++			<0x9f	KEY_BLUE>,
++			<0xcb	KEY_APPLICATION>,
++			<0xc5	KEY_POS>;
++	};
++	/*for IPTV hblt*/
++	ir_key11{
++		rockchip,usercode = <0xc43b>;
++		rockchip,key_table =
++			<0x7e	KEY_REPLY>,	//确定键
++			<0x7f	KEY_BACK>,	//返回键
++			<0x7a	KEY_UP>,
++			<0x78	KEY_DOWN>,
++			<0x7b	KEY_LEFT>,
++			<0x79	KEY_RIGHT>,
++			<0x66	KEY_VOLUMEUP>,
++			<0x65	KEY_VOLUMEDOWN>,
++			<0x69	KEY_POWER>,
++			<0x64	KEY_MUTE>,	//静音键
++			<0x65	KEY_F1>,	//定位键
++			<0x60	KEY_BLUE>,	//快退键
++			<0x61	KEY_YELLOW>,	//快进键
++			<0x76 	KEY_1>,
++			<0x75   KEY_2>,
++			<0x74   KEY_3>,
++			<0x73   KEY_4>,
++			<0x72   KEY_5>,
++			<0x71   KEY_6>,
++			<0x70   KEY_7>,
++			<0x6f   KEY_8>,
++			<0x6e   KEY_9>,
++			<0x77   KEY_0>,
++			<0x7c KEY_PAGEDOWN>,
++			<0x7d KEY_PAGEUP>,
++			<0x6a KEY_SETUP>,		   //设置键
++			<0x68 KEY_CHANNEL_UP>,     //频道加
++			<0x67 KEY_CHANNEL_DN>,     //频道减
++			<0x39 KEY_HOME_PAGE>,      //首页
++			<0x2e KEY_DIRECT_SEEDING>, //直播
++			<0x2c KEY_REVIEW>,         //回看
++			<0x2d KEY_ON_DEMAND>,      //点播
++			<0x2b KEY_INFO1>,           //信息
++			<0x63 KEY_SOUND1>,          //声道	
++			<0x6c KEY_X1>,		          //*
++			<0x6d KEY_X2>,              //#
++			<0x29 KEY_LOCAL>,           //本地 
++			<0x3b KEY_PLAYPAUSE>,				//播放暂停
++			<0x62 KEY_PLAYPAUSE>,				//播放暂停
++			<0x6b KEY_EQUAL>,					//播放暂停
++			<0x0b KEY_EQUAL>;           //删除----电视机音量-     			     
++	};
+ 
+ };
+ 
+diff --git a/arch/arm/boot/dts/rk322x-sdk.dtsi b/arch/arm/boot/dts/rk322x-sdk.dtsi
+old mode 100644
+new mode 100755
+index 9f8582c..6be15e1
+--- a/arch/arm/boot/dts/rk322x-sdk.dtsi
++++ b/arch/arm/boot/dts/rk322x-sdk.dtsi
+@@ -48,7 +48,7 @@
+ 		pinctrl-1 = <&uart11_rts_gpio>;
+ 		BT,power_gpio = <&gpio2 GPIO_D5 GPIO_ACTIVE_HIGH>;
+ 		/* BT,reset_gpio = <&gpio2 GPIO_D5 GPIO_ACTIVE_HIGH>; */
+-		BT,wake_gpio = <&gpio3 GPIO_D3 GPIO_ACTIVE_HIGH>;
++		/* BT,wake_gpio = <&gpio3 GPIO_D3 GPIO_ACTIVE_HIGH>; */
+ 		BT,wake_host_irq = <&gpio3 GPIO_D2 GPIO_ACTIVE_HIGH>;
+ 		status = "okay";
+ 	};
+@@ -137,7 +137,7 @@
+ 		rockchip,remote_wakeup;
+ 		rockchip,usb_irq_wakeup;
+ 		host_drv_gpio = <&gpio3 GPIO_C4 GPIO_ACTIVE_LOW>;
+-		otg_drv_gpio = <&gpio3 GPIO_C6 GPIO_ACTIVE_LOW>;
++		otg_drv_gpio = <&gpio3 GPIO_C4 GPIO_ACTIVE_LOW>;
+ 	};
+ 
+ 	rockchip_audio {
+@@ -390,8 +390,8 @@
+ 	/* reset-gpio = <&gpio2 GPIO_D0 GPIO_ACTIVE_LOW>; */
+ 	/* phyirq-gpio = <&gpio0 GPIO_B1 GPIO_ACTIVE_LOW>; */
+ 	/* control link LED */
+-	link-gpio = <&gpio2 GPIO_B6 GPIO_ACTIVE_HIGH>;
+-	led-gpio = <&gpio2 GPIO_B0 GPIO_ACTIVE_HIGH>;
++	/* link-gpio = <&gpio2 GPIO_B6 GPIO_ACTIVE_HIGH>; */
++	/* led-gpio = <&gpio2 GPIO_B0 GPIO_ACTIVE_HIGH>; */
+ 	phy-mode = "rmii";
+ 	pinctrl-names = "default";
+ 	/* rmii_pins, rgmii_pins, phy_pins */
+-- 
+1.9.1
+

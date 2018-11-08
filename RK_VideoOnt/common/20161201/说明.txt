@@ -1,0 +1,2 @@
+kernel:
+		git am 0002-modify-for-G-120WT-P-raise-freq-of-ddr-and-disable-c.patch

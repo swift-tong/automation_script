@@ -1,0 +1,2 @@
+system/core:
+			git am 0001-modify-for-G-120WT-P-flash-info-auto-adapt.patch

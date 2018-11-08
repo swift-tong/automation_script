@@ -1,0 +1,90 @@
+From 99a05fadc81581f1a24231a61a1041c2f040a84f Mon Sep 17 00:00:00 2001
+From: wangguohai <alex.wang@rock-chips.com>
+Date: Tue, 20 Dec 2016 14:30:46 +0800
+Subject: [PATCH] modify for G-120WT-P:flash info auto adapt
+
+---
+ hardware_prop/rk_flash_prop.c | 33 ++++++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
+
+diff --git a/hardware_prop/rk_flash_prop.c b/hardware_prop/rk_flash_prop.c
+index 7e1797a..b4757f1 100755
+--- a/hardware_prop/rk_flash_prop.c
++++ b/hardware_prop/rk_flash_prop.c
+@@ -1,11 +1,11 @@
+-#include "rk_flash_prop.h"
++ï»¿#include "rk_flash_prop.h"
+ #include "rk_prop_main.h"
+ /*---------------------------------------------------
+-						ÉèÖÃflash²ÎÊı
+-ro.product.flash.type -->Èç¹ûÊÇemmc£¬¾ÍÏÔÊ¾emmc£¬Èç¹ûÊÇnand ¾ÍÊÇnand £¬sdkÔİÊ±Ã»ÓĞnor
+-ro.product.flash.mafld --> Èç¹ûÊÇemmc £¬ÏÔÊ¾none£¬Èç¹ûÊÇnandÏÔÊ¾³§¼Òid(hymax:AD),Èç¹ûÊÇnor£¬ÏÔÊ¾none
+-ro.product.flash.chipInfo -->	Èç¹ûÊÇemmc £¬ÏÔÊ¾none£¬Èç¹ûÊÇnandÏÔÊ¾infoĞÅÏ¢(eb94dead),Èç¹ûÊÇnor£¬ÏÔÊ¾none	
+-ro.product.flash.size ---> emmc£º(3.6G) nand£º(8G),nor(none)		
++						è®¾ç½®flashå‚æ•°
++ro.product.flash.type -->å¦‚æœæ˜¯emmcï¼Œå°±æ˜¾ç¤ºemmcï¼Œå¦‚æœæ˜¯nand å°±æ˜¯nand ï¼Œsdkæš‚æ—¶æ²¡æœ‰nor
++ro.product.flash.mafld --> å¦‚æœæ˜¯emmc ï¼Œæ˜¾ç¤ºnoneï¼Œå¦‚æœæ˜¯nandæ˜¾ç¤ºå‚å®¶id(hymax:AD),å¦‚æœæ˜¯norï¼Œæ˜¾ç¤ºnone
++ro.product.flash.chipInfo -->	å¦‚æœæ˜¯emmc ï¼Œæ˜¾ç¤ºnoneï¼Œå¦‚æœæ˜¯nandæ˜¾ç¤ºinfoä¿¡æ¯(eb94dead),å¦‚æœæ˜¯norï¼Œæ˜¾ç¤ºnone	
++ro.product.flash.size ---> emmcï¼š(3.6G) nandï¼š(8G),nor(none)		
+ ro.product.flash.erasesize  -->none
+ ro.product.flash.oobblock  -->none
+ ro.product.flash.oobsize --> none	
+@@ -81,13 +81,13 @@ void flash_id(void)
+ 		}
+ 	else if(!strcmp(bootmode, "unknown"))
+ 		{
+-				//»ñµÃflash ³§¼Òid
++				//è·å¾—flash å‚å®¶id
+ 				memset(results,0,SCAN_RESULT_LENGTH);
+ 				strcat(results,get_module_param(path,flash_id)+6);
+ 				//printf("flash_id===%s\n",results);
+ 				property_set("ro.product.flash.mafld",results);
+ 				
+-				//»ñµÃflash Ğ¾Æ¬±êÊ¶
++				//è·å¾—flash èŠ¯ç‰‡æ ‡è¯†
+ 				memset(results,0,SCAN_RESULT_LENGTH);
+ 				strcat(results,get_module_param(path,flash_id));
+ 				//printf("flash_id===%s\n",results);
+@@ -95,7 +95,7 @@ void flash_id(void)
+ 		}	
+ 	else
+ 		{
+-			//Ôİ²»Ö§³Ö£¬Ö»ÄÜĞ´ËÀ
++			//æš‚ä¸æ”¯æŒï¼Œåªèƒ½å†™æ­»
+ 			property_set("ro.product.flash.mafld","none");
+ 			property_set("ro.product.flash.chipInfo","none");
+ 		}	
+@@ -120,7 +120,14 @@ void flash_cap(void)
+ 					property_set("ro.product.flash.size",results);
+ 					
+ 					total_size = atof(results);
+-					sprintf(results,"%dG",(int)(total_size + 1));
++					if (atoi(results)>4)
++					{
++						sprintf(results,"%dG(ç³»ç»Ÿåˆ†åŒº:1G,åº”ç”¨åˆ†åŒº:4G,æ¢å¤åˆ†åŒº:430M)",(int)(total_size + 1));
++					}
++					else if (atoi(results)<4)
++					{
++						sprintf(results,"%dG(ç³»ç»Ÿåˆ†åŒº:1G,åº”ç”¨åˆ†åŒº:1G,æ¢å¤åˆ†åŒº:430M)",(int)(total_size + 1));
++					}
+ 					property_set("ro.product.flash.info",results);					
+ 				}
+ 			else if(!strcmp(bootmode, "nand"))
+@@ -167,11 +174,11 @@ void flash_cap(void)
+ 
+ void flash_prop(void)
+ {
+-		//flash ÀàĞÍ
++		//flash ç±»å‹
+ 		flash_type();
+-		//flash ³§¼Òid	
++		//flash å‚å®¶id	
+ 		flash_id();
+-		//flash ÈİÁ¿
++		//flash å®¹é‡
+ 		flash_cap();
+ }
+ //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+-- 
+1.9.1
+

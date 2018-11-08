@@ -1,0 +1,43 @@
+From aea3f3efccecf52042804879e9b7594f3d83521f Mon Sep 17 00:00:00 2001
+From: wangguohai <alex.wang@rock-chips.com>
+Date: Wed, 30 Nov 2016 14:45:40 +0800
+Subject: [PATCH] modify for G-120WT-P:raise freq of ddr and disable change
+ freq of ddr when high temprature
+
+---
+ arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts | 2 +-
+ arch/arm/mach-rockchip/dvfs.c                | 5 -----
+ 2 files changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts b/arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts
+index 2239802..e63f471 100755
+--- a/arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts
++++ b/arch/arm/boot/dts/rk3228b-box_805_tykh2l.dts
+@@ -462,7 +462,7 @@
+ };
+ 
+ &dram {
+-	dram_freq = <560000000>;
++	dram_freq = <700000000>;
+ };
+ 
+ &clk_core_dvfs_table {
+diff --git a/arch/arm/mach-rockchip/dvfs.c b/arch/arm/mach-rockchip/dvfs.c
+index f3a90f9..de3567f 100644
+--- a/arch/arm/mach-rockchip/dvfs.c
++++ b/arch/arm/mach-rockchip/dvfs.c
+@@ -1255,11 +1255,6 @@ static void dvfs_temp_limit_4k(void)
+ 			clk_set_rate(clk, 100 * MHz);
+ 			clk_put(clk);
+ 		}
+-
+-		clk_ddr_dvfs_node->temp_limit_rate = 400000000;
+-		dvfs_clk_set_rate(clk_ddr_dvfs_node,
+-				  clk_ddr_dvfs_node->last_set_rate);
+-
+ 		temp_limit_4k = true;
+ 	}
+ }
+-- 
+1.9.1
+
