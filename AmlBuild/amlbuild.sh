@@ -645,6 +645,12 @@ CheckBuildInfo () {
 		sed -i '/ro.product.model/a \'"$append_platform \\"'' buildinfo.sh
 	fi
 		
+    if [ "$PRODUCTNAME" = "RG020ET-CA" ] && [ "$carrier" = "ct" ] && [ "$province" = "ossm" ];then	
+        FingerIncre="4.4.2\/$PRODUCTNAME\/`date +%Y%m%d-%H-%M-%S`"
+        replacedFinger="echo \"ro.build.fingerprint=$FingerIncre\""
+        echo $replacedFinger
+        sed -i 's/^.*ro.build.fingerprint=.*$/'"$replacedFinger"'/' buildinfo.sh
+    fi		
 	#set manufactureroui value
 }
 

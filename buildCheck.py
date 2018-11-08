@@ -840,6 +840,7 @@ class Checkaml_normal():
         amlOnSiteUpgrade_ret=True
         branch_check_ret=True
         check_property_ret=True
+        adb_encryption_ret=True
         check_list=["ctjc","cmsh","cujc","cthq"]
 
         if self.province not in check_list:		
@@ -847,7 +848,7 @@ class Checkaml_normal():
             log.warn("AmlNsbMaintenance_ret=%s"%AmlNsbMaintenance_ret)
 			
             amlOnSiteUpgrade_ret=self.check_AmlOnSiteUpgrade()
-            log.warn("AmlOnSiteUpgrade_ret=%s"%amlOnSiteUpgrade_ret)
+            log.warn("amlOnSiteUpgrade_ret=%s"%amlOnSiteUpgrade_ret)
 			
             adb_encryption_ret=self.check_adb_encryption()
             log.warn("adb_encryption_ret=%s"%adb_encryption_ret) 
@@ -866,7 +867,7 @@ class Checkaml_normal():
             gaoanset_ret=self.check_gaoanset()
             log.warn("gaoanset_ret=%s"%gaoanset_ret)
 			
-        ret_1=amlOnSiteUpgrade_ret and cpe_version_ret and gaoanset_ret
+        ret_1=amlOnSiteUpgrade_ret and cpe_version_ret and gaoanset_ret and adb_encryption_ret and AmlNsbMaintenance_ret
         log.warn("ret_1={}".format(ret_1))
 
         if int(self.versionstr.split(".")[1]) > 0:

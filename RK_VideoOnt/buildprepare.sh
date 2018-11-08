@@ -161,6 +161,13 @@ CheckBuildInfo () {
     replacedIncre="echo \"ro.build.version.incremental=$Incre\""
     echo $replacedIncre
     sed -i 's/^.*ro.build.version.incremental=.*$/'"$replacedIncre"'/' buildinfo.sh
+	
+    if [ "$product" = "G-120WT-P" ] && [ "$carrier" = "os" ] && [ "$province" = "sm" ];then	
+        FingerIncre="4.4.4\/$PRODUCTNAME\/`date +%Y%m%d-%H-%M-%S`"
+        replacedFinger="echo \"ro.build.fingerprint=$FingerIncre\""
+        echo $replacedFinger
+        sed -i 's/^.*ro.build.fingerprint=.*$/'"$replacedFinger"'/' buildinfo.sh
+    fi
 }
 
 CheckRk3228bMk () {
