@@ -303,19 +303,23 @@ class BackupPatch(MakePatch):
             pi.paramiko_put("imgtool.tar.gz",remote_dir2+"imgtool.tar.gz")
             os.popen("rm imgtool.tar.gz")
 
-        cmd1='cp {} {}{}'.format(self.workspace+".repo/"+self.real_manifest,self.img_dir,self.real_manifest.split("/")[1])
-        log.warn("exec cmd1: {}".format(cmd1))
-        ret2=os.popen(cmd1)
+        #cmd1='cp {} {}{}'.format(self.workspace+".repo/"+self.real_manifest,self.img_dir,self.real_manifest.split("/")[1])
+        #log.warn("exec cmd1: {}".format(cmd1))
+        #ret2=os.popen(cmd1)
         os.chdir(self.img_dir)
         tar_file=tarfile.open(self.storage_mani_name,"w:gz")
         log.warn("Packageimg {},please wait.".format(self.storage_mani_name))
+        if os.path.exists(self.real_manifest.split("/")[-1]):
+            os.popen("rm {}".format(self.real_manifest.split("/")[-1]))
         for root,dirs,files in os.walk(self.img_dir):
             for fi in files:
-                if fi.endswith(".xml") or fi.endswith(".build.prop"):
+                if fi.endswith(".xml") or fi.endswith(".build.prop") or fi.endswith("keyvaluemapping.csv"):
                     if fi.endswith(".xml"):
                         check_ver=int(fi.split("_")[-1].split(".")[0])
                     elif fi.endswith(".build.prop"):
                         check_ver=int(fi.split(".")[-3])
+                    elif fi.endswith("keyvaluemapping.csv"):
+                        check_ver=int(fi.split("R")[-1].split("_")[0].split(".")[-1])
                     else:
                         log.error("Mini Version error")
                         continue						
@@ -327,8 +331,9 @@ class BackupPatch(MakePatch):
         tar_file.close()
         log.warn("Putting {} to Server:{}".format(self.storage_mani_name,remote_dir+self.storage_mani_name))
         pi.paramiko_put(self.storage_mani_name,remote_dir+self.storage_mani_name)
+        log.warn(self.workspace+".repo/"+self.real_manifest)
+        pi.paramiko_put(self.workspace+".repo/"+self.real_manifest,remote_dir+self.real_manifest.split("/")[-1])
         os.popen("rm {}".format(self.storage_mani_name))
-        os.popen("rm {}".format(self.real_manifest.split("/")[1]))
         
 
 class BackupTargetFile(BackupPatch):
@@ -493,15 +498,15 @@ def method_manual():
         mp.only_check()
     elif (ans == "backupall" or ans == "3") and check_item not in old_manifest_list:
         log.warn("This feature is not supported yet. Please contact your administrator.")
-        #mp.get_need_make_patch()
-        #mp.check_git_status()
-        #mp.make_patch()
-        #bp=BackupPatch()
-        #bp.storage_patch()
-        #bp.push_to_server()
-        #bp.backup_config()
-        #btf=BackupTargetFile()
-        #btf.back_current_tag_file()
+        mp.get_need_make_patch()
+        mp.check_git_status()
+        mp.make_patch()
+        bp=BackupPatch()
+        bp.storage_patch()
+        bp.push_to_server()
+        bp.backup_config()
+        btf=BackupTargetFile()
+        btf.back_current_tag_file()
     elif (ans == "makePatch" or ans == "2") and check_item not in old_manifest_list:
         mp.get_need_make_patch()
         mp.check_git_status()
@@ -538,6 +543,7 @@ if __name__ == "__main__":
 
 
 #Manual run 
+#注意传参数的时候用小写
 #python backup_strategy.py s905l rg020et-ca cusd nolauncher S-010W-AV2B_SW_D_ZY_CUSD_R1.01.22
 #python backup_strategy.py 3228h s-010w-av2b cubj nolauncher S-010W-AV2B_SW_D_ZY_CUSD_R1.01.22
 

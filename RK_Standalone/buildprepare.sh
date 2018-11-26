@@ -56,7 +56,11 @@ ReadCdeParameter () {
         enableadb=0
 		echo "enableadb is $enableadb"
      fi
-    enbackup=1
+    if [ "$product" = "S-010W-A" ] && [ "$carrier" = "ct" ] && [ "$province" = "nx" ] ;then
+        enbackup=0
+    else
+        enbackup=1
+    fi
 }
 
 CheckVersion(){

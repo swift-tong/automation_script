@@ -485,15 +485,19 @@ class CheckNsbMaintenance():
 		
 class Checkaml_normal():
     def __init__(self):
-        partten='(R\d.\d{2}).\d{2}.*'
+        partten1='(R\d.\d{2}).\d{2}.*'
+        partten2='(\d.\d{2}).\d{2}.*'
         self.product=sys.argv[2]
         self.province=sys.argv[4]
         self.launcher=sys.argv[6]
         if len(sys.argv) > 7:
             self.versionstr=sys.argv[7]
-            p=re.search(partten,self.versionstr)
+            p=re.search(partten1,self.versionstr)
             if p:
                 self.check_str=p.group(1)
+            p2=re.search(partten2,self.versionstr)
+            if p2:
+                self.check_str=p2.group(1)
         self.mid_ver=int(self.versionstr.split(".")[1])
 		
         if self.province[:2] == "cu":
@@ -863,7 +867,7 @@ class Checkaml_normal():
         check_property_ret=self.check_property()
         log.warn("check_property_ret=%s"%check_property_ret)
 			
-        if self.product == "S-010W-AV2A" and self.province == "ctjc":		
+        if (self.product == "S-010W-AV2A" and self.province == "ctjc") or (self.product == "RG020ET-CA" and self.province == "cthq"):		
             gaoanset_ret=self.check_gaoanset()
             log.warn("gaoanset_ret=%s"%gaoanset_ret)
 			
@@ -878,7 +882,7 @@ class Checkaml_normal():
             check_td=self.checkaml_tcpdump_adbdz()
             log.warn("check_td=%s"%check_td)
 
-        if os.path.exists(self.branch_config) and self.mid_ver > 0:
+        if os.path.exists(self.branch_config):
             branch_check_ret=self.check_branch()
             log.warn("branch_check_ret=%s" % branch_check_ret)
 			
@@ -1415,6 +1419,7 @@ class ChecknormalInput():
         checkOnSiteUpgrade_ret=True
         check_8189fs_ret=True
         check_property_ret=True
+        liblog_ret=True
 
 
         if self.province != "base":
@@ -1471,11 +1476,20 @@ class ChecknormalInput():
             log.warn("ro.product.cpu.info and ro.product.gpu.info is add")			
         elif self.chiptype == "RK3228B": 
             logobmp_ret = True 
-        log.warn("logobmp_ret=%s"%logobmp_ret)	
+        log.warn("logobmp_ret=%s"%logobmp_ret)
+
+        if self.product == "S-010W-A" and self.chiptype == "RK3228H" and self.province == "cubj":
+            check_so=self.suyingdir + "/libs/liblog.so"
+            log.warn("check_so={}".format(check_so))
+            if os.path.exists(check_so):
+                liblog_ret=False
+                log.error("Please delete {}".format(check_so))
+		
 		
         flag1 = checkOnSiteUpgrade_ret and promode_ret and flashRelevant_ret and hardwareid_ret and parameter_ret and logobmp_ret and check_conmmit
         flag2 = check_deviceinfo and checkDolby_ret and check_DNSmasq1 and check_DNSmasq2 and flash_check_ret and adb_encryption_ret and check_8189fs_ret
-        return flag1 and flag2	
+        flag3 = liblog_ret
+        return flag1 and flag2 and flag3
 
 class CheckFactoryImg(CheckMultipleBranch):
     def __init__(self):
@@ -1637,7 +1651,8 @@ class CheckBuildParameter():
         branchList=os.popen("git branch -a").read().split("\n")
         log.info(str(branchList))
         for br in branchList:
-            if self.branchName in br and  "*" in br:
+            check_item="* "+self.branchName
+            if  check_item == br:
                     log.info("Branch name is rigth")
                     return True 
         log.error("****Error:Branch name is not rigth,please recheck :Error****")
@@ -1701,9 +1716,18 @@ class CheckBuildParameter():
 	
     @build_decorator			
     def getResult(self):
+        check_normal=True
+        branch_ret=True
+        boardConfig_ret=True
         branch_check_ret=True
-        branch_ret=self.checkbranch()
-        log.warn("branch_ret=%s"%branch_ret)
+        if os.path.exists(self.branch_config):
+            with open(self.branch_config,'r') as f:
+                ret=f.read()
+                if 'device/rockchip/rksdk' in ret:
+                    check_normal=False
+        if check_normal:
+            branch_ret=self.checkbranch()
+            log.warn("branch_ret=%s"%branch_ret)
 		
         boardConfig_ret=self.checkBoardConfig()
         log.warn("boardConfig_ret=%s"%boardConfig_ret)		

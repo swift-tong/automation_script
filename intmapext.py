@@ -246,6 +246,8 @@ IntToExtDict = {
     ('RG020ET-CA',('S905L','RTL8676'),'zy','fenghuo','cuhl'): 'B',
     #cuqd
     ('RG020ET-CA',('S905L','RTL8676'),'zy','nolauncher','cuqd'): 'A',
+    #cugd
+    ('RG020ET-CA',('S905L','RTL8676'),'zy','nolauncher','cugd'): 'A',
     #cuah
     ('RG020ET-CA',('S905L','RTL8676'),'zy','nolauncher','cuah'): 'A',
     #cusd
@@ -260,6 +262,7 @@ IntToExtDict = {
     ('RG020ET-CA',('S905L3','RTL8676'),'zy','nolauncher','cusd'): 'A',
     #cthq
     ('RG020ET-CA',('S905L3','RTL8676'),'zy','nolauncher','cthq'): 'A',
+    ('RG020ET-CA',('S905L3','RTL8676'),'zy','gaoan','cthq'): 'B',
     #cuqd
     ('RG020ET-CA',('S905L2','RTL8822BS'),'zy','nolauncher','cuqd'): 'A',
     #cujs
@@ -490,14 +493,24 @@ class GetVerStrInput(HardWareInfo):
                 self.extstr="RG020ET-CA_SW_B_HB_R1.00.80"
             elif self.province == "cthn" and self.product== "G-120WT-P":
                 self.extstr="G-120WT-P_SW_HN_A_R1.00.98"
-            elif self.province == "ctgx" and self.product== "G-120WT-P":
+            elif self.province == "ctgx" and self.product== "G-120WT-P" and self.majversion in (1,3):
                 self.extstr="G-120WT-P_SW_GX_A_R1.00.08"
+            elif self.province == "ctgx" and self.product== "G-120WT-P" and self.majversion == 2:
+                self.extstr="G-120WT-P_SW_GX_A_R1.02.08"
+            elif self.province == "ctgx" and self.product== "G-120WT-P" and self.majversion in (0,4):
+                self.extstr="G-120WT-P_SW_GX_A_R1.04.08"
             elif self.province == "ctxj" and self.product== "G-120WT-P":
                 self.extstr="G-120WT-P_SW_XJ_A_R1.00.01"
             elif self.province == "ctln" and self.product== "G-120WT-P":
                 self.extstr="G-120WT-P_SW_LN_A_R1.01.08"
             elif self.province == "cthe" and self.product == "RG020ET-CA":
                 self.extstr="RG020ET-CA_SW_HE_A_R1.00.00"
+            elif self.province == "ctgx" and self.product == "RG020ET-CA" and self.majversion == 1:
+                self.extstr="RG020ET-CA_SW_GX_A_R1.00.07"
+            elif self.province == "ctgx" and self.product == "RG020ET-CA" and self.majversion == 2:
+                self.extstr="RG020ET-CA_SW_GX_A_R1.02.07"
+            elif self.province == "ctgx" and self.product == "RG020ET-CA" and self.majversion == 0:
+                self.extstr="RG020ET-CA_SW_GX_A_R1.03.07"
             elif self.province == "cusd" and self.product == "G-120WT-P":
                 self.extstr="NSBCUSD_A_R1.00.05"
             elif self.province == "cunm" and self.product == "S-010W-AV2S":
@@ -649,7 +662,6 @@ class GetVerStrInput(HardWareInfo):
         elif self.chiptype == "S905L3":
             bc="05"
             
-
         de="00"
         if self.province == "ctnx" or self.province == "cuxj":
             self.hwid="R"+a+"."+bc+"."+de
@@ -665,6 +677,8 @@ class GetVerStrInput(HardWareInfo):
             self.hwid=self.product+"_HW_"+a+"."+bc+"."+de
         elif self.product == "S-010W-AV2A" and self.province == "cujc":
             self.hwid="1.01.01"
+        elif self.chiptype == "S905L3" and self.product == "RG020ET-CA" and self.province == "cthq":
+            self.hwid="99008002L3B61803AVA10301"
         else:
             self.hwid=self.product+"_HW_R"+a+"."+bc+"."+de
 				
