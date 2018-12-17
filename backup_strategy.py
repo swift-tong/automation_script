@@ -66,10 +66,10 @@ count=0
 
 class MakePatch(object):
     def __init__(self):
-        self.chipType=sys.argv[1]
-        self.productname=sys.argv[2]
-        self.province=sys.argv[3]
-        self.launcher=sys.argv[4]
+        self.chipType=sys.argv[1].lower()
+        self.productname=sys.argv[2].lower()
+        self.province=sys.argv[3].lower()
+        self.launcher=sys.argv[4].lower()
         self.version=sys.argv[5].split("_")[-1]
         self.manifest_dict = {}
         self.git_dir_list=[]
@@ -319,6 +319,9 @@ class BackupPatch(MakePatch):
                     elif fi.endswith(".build.prop"):
                         check_ver=int(fi.split(".")[-3])
                     elif fi.endswith("keyvaluemapping.csv"):
+                        log.warn(fi)
+                        log.warn(fi.split("R")[-1])
+                        log.warn(fi.split("R")[-1].split("_")[0])
                         check_ver=int(fi.split("R")[-1].split("_")[0].split(".")[-1])
                     else:
                         log.error("Mini Version error")

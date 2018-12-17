@@ -55,6 +55,7 @@ nsbotaServerDict={
     ("S-010W-AV2C","cusd","nolauncher") : ("ro.config.nsbotaserver","http://119.164.210.229:8023/upgrade.ini \\"),
     ("S-010W-AQD","cuqd","nolauncher") : ("ro.config.nsbotaserver","http://119.164.210.229:8023/upgrade.ini \\"),
     ("S-010W-AV2B","cusd","nolauncher") : ("ro.config.nsbotaserver","http://119.164.210.229:8023/upgrade.ini \\"),
+    ("S-010W-AV2","cusd","nolauncher") : ("ro.config.nsbotaserver","http://119.164.210.229:8023/upgrade.ini \\"),
     ("S-010W-A","cusd","newline") : ("ro.config.nsbotaserver","http://119.164.210.229:8023/upgrade.ini \\"),
     ("RG020ET-CA","cusd","nolauncher") : ("ro.config.nsbotaserver","http://119.164.210.229:8023/upgrade.ini"),
 	("G-120WT-P","zsqd","nolauncher") : ("ro.config.nsbotaserver","http://otaserver.nsb.qdairport:8082/upgrade.ini"),
@@ -294,6 +295,7 @@ class CheckConfig(object):
                     ("G-120WT-P","cuhl","huawei") : ("ro.config.otaserver","http://1.58.81.208:8082/update.zip \\"),
                     ("S-010W-AV2S","cuhl","fenghuo") : ("ro.config.otaserver","http://1.58.81.208/Version.xml \\"),
                     ("S-010W-AV2S","cuhl","huawei") : ("ro.config.otaserver","http://1.58.81.208/Version.xml \\"),
+                    ("S-010W-AV2S","cuhi","nolauncher") : ("ro.config.otaserver","http://10.150.0.115:8081/Version.xml \\"),
                     ("S-010W-A","cuxj","nolauncher") : ("ro.config.otaserver","http://10.38.1.14:8082/ \\"),
                     ("S-010W-AV2B","cujx","nolauncher") : ("ro.config.otaserver","http://118.212.169.136:8888/Version.ini \\"),
                     ("G-120WT-P","ctln","nolauncher") : ("ro.config.otaserver","http://fenghuo.99tv.com.cn:8087/HG680B/Version.ini \\"),
@@ -486,7 +488,7 @@ class CheckNsbMaintenance():
 class Checkaml_normal():
     def __init__(self):
         partten1='(R\d.\d{2}).\d{2}.*'
-        partten2='(\d.\d{2}).\d{2}.*'
+        partten2='(.*\d.\d{2}).\d{2}.*'
         self.product=sys.argv[2]
         self.province=sys.argv[4]
         self.launcher=sys.argv[6]
@@ -846,6 +848,7 @@ class Checkaml_normal():
         check_property_ret=True
         adb_encryption_ret=True
         check_list=["ctjc","cmsh","cujc","cthq"]
+        check_list=["test"]
 
         if self.province not in check_list:		
             AmlNsbMaintenance_ret=self.CheckAmlNsbMaintenance()
@@ -871,7 +874,7 @@ class Checkaml_normal():
             gaoanset_ret=self.check_gaoanset()
             log.warn("gaoanset_ret=%s"%gaoanset_ret)
 			
-        ret_1=amlOnSiteUpgrade_ret and cpe_version_ret and gaoanset_ret and adb_encryption_ret and AmlNsbMaintenance_ret
+        ret_1=amlOnSiteUpgrade_ret and cpe_version_ret and gaoanset_ret and adb_encryption_ret and AmlNsbMaintenance_ret and check_property_ret
         log.warn("ret_1={}".format(ret_1))
 
         if int(self.versionstr.split(".")[1]) > 0:
@@ -1488,7 +1491,7 @@ class ChecknormalInput():
 		
         flag1 = checkOnSiteUpgrade_ret and promode_ret and flashRelevant_ret and hardwareid_ret and parameter_ret and logobmp_ret and check_conmmit
         flag2 = check_deviceinfo and checkDolby_ret and check_DNSmasq1 and check_DNSmasq2 and flash_check_ret and adb_encryption_ret and check_8189fs_ret
-        flag3 = liblog_ret
+        flag3 = liblog_ret and check_property_ret
         return flag1 and flag2 and flag3
 
 class CheckFactoryImg(CheckMultipleBranch):
@@ -1632,11 +1635,12 @@ class CheckBuildParameter():
         self.launcher=sys.argv[6]
         if len(sys.argv) > 7:
             self.imgprex=sys.argv[7]
-        if "R" in self.imgprex:
-            self.mid_ver=int(self.imgprex.split("R")[-1].split(".")[1])
-            p=re.search(partten,self.imgprex)
-            if p:
-               self.check_str=p.group(1)
+        if self.imgprex:
+            if "R" in self.imgprex:
+                self.mid_ver=int(self.imgprex.split("R")[-1].split(".")[1])
+                p=re.search(partten,self.imgprex)
+                if p:
+                   self.check_str=p.group(1)
         self.branch_config=os.environ["HOME"]+"/build/input/zy/{}/branchCheck.ini".format(self.province)
         self.branchdir=os.environ["HOME"]+"/workspace/device/rockchip/rksdk/"
         if self.launcher == "nolauncher":
@@ -1745,7 +1749,7 @@ class CheckBuildParameter():
             branch_check_ret=can.check_branch()
             log.warn("branch_check_ret=%s" % branch_check_ret)
 		
-        self.flag = branch_ret and boardConfig_ret and suying_ret and android_ret
+        self.flag = branch_ret and boardConfig_ret and suying_ret and android_ret and branch_check_ret
         		
         return self.flag
 

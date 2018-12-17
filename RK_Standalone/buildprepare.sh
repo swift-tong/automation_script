@@ -612,7 +612,7 @@ EnableRK3228HAdb(){
         local replaced1="    rockchip,usb-mode = <2>;"
         echo $replaced1
         sed -i 's/^.*usb-mode.*$/'"$replaced1"'/' twowing_3228h_rk805_rtl8822_2layout_ddr3.dts
-    elif [ "$buildtype" = "3228h" ] && [ "$carrier$province" = "cusc" ];then
+    elif [ "$PRODUCTNAME" = "S-010W-AVC" ];then
         local replaced1="    rockchip,usb-mode = <2>;"
         echo $replaced1
         sed -i 's/^.*usb-mode.*$/'"$replaced1"'/' twowing_3228h_pwm_2layout_lpddr3.dts
@@ -639,8 +639,8 @@ DisableRK3228HAdb(){
     if [ "$PRODUCTNAME" = "S-010W-AV2" ];then
         local replaced1="    rockchip,usb-mode = <1>;"
         echo $replaced1
-        sed -i 's/^.*usb-mode.*$/'"$replaced1"'/'  rk322xh.dtsi
-    elif [ "$buildtype" = "3228h" ] && [ "$carrier$province" = "cusc" ];then
+        sed -i 's/^.*usb-mode.*$/'"$replaced1"'/' twowing_3228h_rk805_rtl8822_2layout_ddr3.dts
+    elif [ "$PRODUCTNAME" = "S-010W-AVC" ];then
         local replaced1="    rockchip,usb-mode = <1>;"
         echo $replaced1
         sed -i 's/^.*usb-mode.*$/'"$replaced1"'/' twowing_3228h_pwm_2layout_lpddr3.dts
@@ -809,11 +809,18 @@ Realstandby (){
 
 #Our workspace strategy is clear : Only maintain the RKSDK as local change
 #For all other local change, include : 
+
 CleanWorkspace () {
     if [ "$buildtype" = "3228b" ];then
         CleanRk3228bPrivateChange #RK3228.mk, buildinfo.sh, device.mk
         cd "$WP/kernel/arch/arm/boot/dts"
         git co -- rk322x.dtsi
+    elif [ "$PRODUCTNAME" = "S-010W-AV2" ];then
+        CleanRk3228hPrivateChange
+        git co --  rk322xh.dtsi
+    elif [ "$PRODUCTNAME" = "S-010W-AV2C" ];then
+        CleanRk3228hPrivateChange
+        git co --  twowing_3228h_pwm_2layout_lpddr3.dts
     elif [ "$buildtype" = "3228h" ];then
         CleanRk3228hPrivateChange #RK3228h.mk, buildinfo.sh, device.mk
         cd "$WP/kernel/arch/arm64/boot/dts"

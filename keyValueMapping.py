@@ -98,7 +98,7 @@ class GetRemoteControlConf(object):
             self.scancode_list = ['<{}>'.format(sys.argv[7])]
         else:
             self.scancode_list = ['<0xc43b>', '<0x3bc4>']
-        self.head=['Usercode','物理码','dts码','Linux code','Android code']
+        self.head=['Usercode','物理码','RMC_GETDATA','key_map','Linux code','Key_code','Android code']
         self.dts_dict={
             's-010w-a' : 'rk3228b-box.dts',
             's-010w-av2b' : 'rk-stb-keymap.dtsi',
@@ -297,7 +297,7 @@ class GetRemoteControlConf(object):
             count=count+1
             new_values = []
             for val in values:
-                new_val=[key[1:-1],val[0],val[1],val[3],val[5]]
+                new_val=[key[1:-1],val[0],val[1],val[2],val[3],"KEYCODE_"+str(val[4]),val[5]]
                 new_values.append(new_val)
             new_values.append(self.head)
             self.remoteControl_filter_dict[key]=new_values
@@ -326,7 +326,7 @@ class GetAmlRemoteControlConf(GetRemoteControlConf):
     def __init__(self):
         super(GetAmlRemoteControlConf,self).__init__()
         self.remote_conf_list=[]
-        self.head=['FactoryCode','物理码','Linux code','Android code']
+        self.head=['FactoryCode','物理码','Linux code','Key_code','Android code']
 
 
     def get_remote_conf_index(self):
@@ -478,7 +478,7 @@ class GetAmlRemoteControlConf(GetRemoteControlConf):
             count=count+1
             new_values = []
             for val in values:
-                new_val=[key,val[0],val[1],val[3]]
+                new_val=[key,val[0],val[1],'KEYCODE_'+str(val[2]),val[3]]
                 new_values.append(new_val)
             new_values.append(self.head)
             self.remoteControl_filter_dict[key]=new_values

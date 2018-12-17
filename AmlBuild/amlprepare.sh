@@ -576,7 +576,11 @@ PrepareFile() {
     cd $tmp
     Unpack $1
     RawCopy
-	ApkSignAll
+    if [ $2 = "sign" ];then	
+        ApkSignAll
+    elif [ $2 = "notsign" ];then
+        echo "You select not sign,not sign apk "
+    fi
 }
 
 current_mk=""

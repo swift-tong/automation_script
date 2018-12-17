@@ -526,11 +526,15 @@ HandleThird () {
     cp *.apk $apk
     #cp "$third/*.apk" $apk
     cd $apk
-    for names in $(find . -type f); 
-    do
-        echo "to be signed apk file name is: $names"
-        ApkSign $names
-    done
+    if [ $2 = "sign" ];then	
+        for names in $(find . -type f);
+        do
+            echo "to be signed apk file name is: $names"
+            ApkSign $names
+        done
+    elif [ $2 = "notsign" ];then
+        echo "You select not sign,not sign apk "
+    fi
 #   add for pre-signed apk
     local slash="/"
     local signed="signed"
@@ -559,7 +563,7 @@ PrepareThird () {
     pwd
     local ifilename=$1
     Unpack $1
-    HandleThird $ifilename
+    HandleThird $ifilename $2
 }
 
 HandleApk(){

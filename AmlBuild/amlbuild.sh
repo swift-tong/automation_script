@@ -11,6 +11,7 @@
 wifi=""
 carrier=""
 province=""
+signcheck="sign"
 middleware=""
 MIDDLEWARECAP="ZY"
 productswversion=""
@@ -219,7 +220,7 @@ CheckWifis () {
 HelpAcDts () {
 echo " the accepted ACdts types are: "
 echo " ##########################################################"
-echo "    rtl8822bs(1)    (  S-010W-AV2  )      "
+echo "    rtl8822bs(1)    (  S-010W-AV2 ,S-010W-AV2A )      "
 echo "    en7526g(2)      (  G-120WT-R  )      "
 echo " ##########################################################"     
 }
@@ -385,7 +386,7 @@ GenVersionStr () {
     elif [ $inputchip = "s905l3" ] && [ $carrier$province = "ctjc" ];then
         VERSIONSTR="1.$mjversion.$mnversion"
     elif [ $inputchip = "s905l3" ] && [ $carrier$province = "cthq" ];then
-        VERSIONSTR="1.$mjversion.$mnversion"
+        VERSIONSTR="V1.$mjversion.$mnversion"
     elif [ $inputchip = "s905l2" ] && [ $carrier$province = "cujc" ];then
         VERSIONSTR="1.$mjverstr.$mnverstr"
     else
@@ -530,6 +531,9 @@ CheckBuildInfo () {
         elif [ "$PRODUCTNAME" = "S-010W-AV2A" ] && [ "$carrier$province" = "cujc" ];then
             local replaced1='echo "ro.product.manufacturer=TEST"'
             local rep1='echo "android.os.Build.MANUFACTURER=TEST"'
+        elif [ "$PRODUCTNAME" = "RG020ET-CA" ] && [ "$carrier$province" = "cthq" ];then
+            local replaced1='echo "ro.product.manufacturer=CT2018"'
+            local rep1='echo "android.os.Build.MANUFACTURER=CT2018"'
         else
             local replaced1='echo "ro.product.manufacturer=NSB"'
             local rep1='echo "android.os.Build.MANUFACTURER=NSB"'
@@ -543,9 +547,14 @@ CheckBuildInfo () {
     sed -i 's/^.*android.os.Build.MANUFACTURER=.*$/'"$rep1"'/' buildinfo.sh
 	
     #now change echo "ro.product.name=$PRODUCT_NAME"
-	PRODUCT_MODEL=$UnitType
-    local replaced2="echo \"ro.product.name=$PRODUCT_MODEL\""
-	local replaced3="echo \"ro.product.model=$PRODUCT_MODEL\""
+    if [ "$PRODUCTNAME" = "RG020ET-CA" ] && [ "$carrier$province" = "cthq" ];then
+        local replaced2="echo \"ro.product.name=CTMix-L\""
+        local replaced3="echo \"ro.product.model=CTMix-L\""
+    else
+	    PRODUCT_MODEL=$UnitType
+        local replaced2="echo \"ro.product.name=$PRODUCT_MODEL\""
+	    local replaced3="echo \"ro.product.model=$PRODUCT_MODEL\""
+    fi
     echo $replaced2
 	echo $replaced3
     sed -i 's/^.*ro.product.name=.*$/'"$replaced2"'/' buildinfo.sh
@@ -612,11 +621,19 @@ CheckBuildInfo () {
 	#now change echo "ro.devicesummary "
 	grep ro.product.productclass  buildinfo.sh
 	if [ $? -ne 0 ]; then
-		local appendx_productclass="echo \"ro.product.productclass=$UnitType\""
+        if [ "$PRODUCTNAME" = "RG020ET-CA" ] && [ "$carrier$province" = "cthq" ];then
+            local appendx_productclass="echo \"ro.product.productclass=CTMix-L\""
+        else
+		    local appendx_productclass="echo \"ro.product.productclass=$UnitType\""
+        fi
 		echo $appendx_productclass
 		sed -i '/ro.product.chiptype/a \'"$appendx_productclass \\"'' buildinfo.sh
 	else
-		local appendx_productclass="echo \"ro.product.productclass=$UnitType\""
+        if [ "$PRODUCTNAME" = "RG020ET-CA" ] && [ "$carrier$province" = "cthq" ];then
+            local appendx_productclass="echo \"ro.product.productclass=CTMix-L\""
+        else
+		    local appendx_productclass="echo \"ro.product.productclass=$UnitType\""
+        fi
 		echo $appendx_productclass
 		sed -i 's/^.*ro.product.productclass=.*$/'"$appendx_productclass"'/' buildinfo.sh
 	fi	
@@ -1231,11 +1248,26 @@ HandleBuild ()
 	echo "build completed!!!"
 }
 
+JudgeSign(){
+    echo "Please select do you need to signed the apk"
+    echo " ############################"
+    echo "      sign(1) notsign(2)  "
+    echo " ############################" 
+    read ans
+    if [ $ans = "sign" ] || [ $ans = "1" ];then
+        signcheck="sign"
+    elif [ $ans = "notsign" ] || [ $ans = "2" ];then
+        signcheck="notsign"
+    fi
+    
+}
+
 HandlePrepare () {
     echo " Please input the to be handled zip/rar file : "
     read filename
+    JudgeSign
     source amlprepare.sh 
-    PrepareFile $filename
+    PrepareFile $filename $signcheck
 }
 
 HandleCopyfile() {

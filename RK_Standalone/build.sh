@@ -405,7 +405,7 @@ BuildUpdate () {
 
 #u-boot
     cp ${workdir}/u-boot/uboot.img ${targetimg}/
-    if [ "$buildtype" = "3228h" ] && [ "$carrier" = "cu" ] && [ "$province" = "sd" ];then
+    if [ "$PRODUCTNAME" = "S-010W-AV2B" ] && [ "$carrier" = "cu" ] && [ "$province" = "sd" ];then
         cp ${imgmake_tool}/trust.img ${targetimg}/
     else
         cp ${workdir}/u-boot/trust.img ${targetimg}/

@@ -488,6 +488,24 @@ PrepareFile() {
     mv $TXT $image
 }
 
+
+HandleThirdSo(){
+    for names in `ls -d */`
+        do
+            ls $names/lib/*.so
+            if [ $? -eq 0 ];then
+                cp $names/lib/*.so  $libs
+            fi				
+            if [ -d "$names/lib/armeabi-v7a" ];then
+                find "$names/lib/armeabi-v7a" -name *.so -exec cp {} "$libs" \;
+            elif [ -d "$names/lib/armeabi" ];then
+                find "$names/lib/armeabi" -name *.so -exec cp {} "$libs" \;
+            else
+                echo "there is no so in $names"
+            fi 				
+        done
+}
+
 #first copy, then apk sign
 HandleThird () {
     local inputfilename=$1
@@ -504,15 +522,19 @@ HandleThird () {
     find "$third" -name 'amtprox' -exec cp {} "$bin"  \;
 
     cd "$third/$fileprefix"
-    find . -name *.so -exec cp {} "$libs" \;
+    HandleThirdSo
     cp *.apk $apk
     #cp "$third/*.apk" $apk
     cd $apk
-    for names in $(find . -type f); 
-    do
-        echo "to be signed apk file name is: $names"
-        ApkSign $names
-    done
+    if [ $2 = "sign" ];then	
+        for names in $(find . -type f);
+        do
+            echo "to be signed apk file name is: $names"
+            ApkSign $names
+        done
+    elif [ $2 = "notsign" ];then
+        echo "You select not sign,not sign apk "
+    fi
 #   add for pre-signed apk
     local slash="/"
     local signed="signed"
@@ -541,7 +563,7 @@ PrepareThird () {
     pwd
     local ifilename=$1
     Unpack $1
-    HandleThird $ifilename
+    HandleThird $ifilename $2
 }
 
 HandleApk(){

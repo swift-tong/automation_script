@@ -37,6 +37,7 @@ IntVerDict = {
     ('S905L','NOWIFI') : 'F',
     ('S905L3','RTL8676') : 'G',
     ('S905L3','RTL8822BS') : 'H',
+    ('S905L2','RTL8822BS') : 'I',
 }
  
 IntToExtDict = {
@@ -203,7 +204,9 @@ IntToExtDict = {
     #cusc
     ('S-010W-A',('RK3228H','8189FTV'),'zy','nolauncher','cusc'): 'C',
     #cusd
-    ('S-010W-AV2C',('RK3228H','8189FTV'),'zy','nolauncher','cusd'): 'A',	
+    ('S-010W-AV2C',('RK3228H','8189FTV'),'zy','nolauncher','cusd'): 'A',
+    #cucq
+    ('S-010W-AV2C',('RK3228H','8189FTV'),'zy','nolauncher','cucq'): 'A',	
     #oversea
     #singmeng
     ('S-010W-AV2B',('RK3228H','8189FTV'),'zy','nolauncher','ossm'): 'A',
@@ -248,6 +251,8 @@ IntToExtDict = {
     ('RG020ET-CA',('S905L','RTL8676'),'zy','nolauncher','cuqd'): 'A',
     #cugd
     ('RG020ET-CA',('S905L','RTL8676'),'zy','nolauncher','cugd'): 'A',
+    #cugd
+    ('RG020ET-CA',('S905L3','RTL8676'),'zy','nolauncher','cugd'): 'A',
     #cuah
     ('RG020ET-CA',('S905L','RTL8676'),'zy','nolauncher','cuah'): 'A',
     #cusd
@@ -279,12 +284,19 @@ IntToExtDict = {
     #china unicom
     #cuhn
     ('S-010W-AV2',('RK3228H','RTL8822BS'),'zy','nolauncher','cuhn'): 'A',
+    #cusd
+    ('S-010W-AV2',('RK3228H','RTL8822BS'),'zy','nolauncher','cusd'): 'A',
+    #cubj
+    ('S-010W-AV2',('RK3228H','RTL8822BS'),'zy','nolauncher','cubj'): 'A',
     #S-010W-AV2A
     #china telecom
     #ctjc
     ('S-010W-AV2A',('S905L3','RTL8822BS'),'zy','nolauncher','ctjc'): 'A',
     ('S-010W-AV2A',('S905L3','RTL8822BS'),'zy','gaoan','ctjc'): 'B',	
-    ('S-010W-AV2D',('S905L2','RTL8822BS'),'zy','nolauncher','ctjc'): 'A'
+    ('S-010W-AV2D',('S905L2','RTL8822BS'),'zy','nolauncher','ctjc'): 'A',
+    #china unicom
+    #cusd
+    ('S-010W-AV2A',('S905L2','RTL8822BS'),'zy','nolauncher','cusd'): 'A',
     }
 
 
@@ -543,7 +555,9 @@ class GetVerStrInput(HardWareInfo):
             intver=IntVerDict[dictkey]
             verstr=self.GenVersionString()
             if self.chiptype=="RK3228H" and self.product != "S-010W-AV2C":
-                if self.province=="cubj" or self.province=="cusd" or self.province=="cujx":
+                if self.province=="cubj" and self.product == "S-010W-AV2":
+                    innrproduct = self.product
+                elif self.province=="cubj" or self.province=="cujx":
                     innrproduct="S-010W-AV2B"
                 elif self.province=="cusc":
                     innrproduct="S-010W-AV2C"                
@@ -665,20 +679,16 @@ class GetVerStrInput(HardWareInfo):
         de="00"
         if self.province == "ctnx" or self.province == "cuxj":
             self.hwid="R"+a+"."+bc+"."+de
-        elif self.product == "S-010W-A" and self.province == "cusd":
-            self.hwid="S-010W-A_HW_R"+a+"."+bc+"."+de
         elif self.chiptype.lower() == "s905l3" and self.province == "ctjc":
             self.hwid="99008002L3B61803AVA10301"
         elif self.product == "S-010W-A" and self.chiptype == "RK3228H" and self.province == "cusc":
             self.hwid="S-010W-A_HW_R1.01.00"
-        elif self.chiptype == "RK3228H" and self.province == "cusd":
-            self.hwid="S-010W-AV2B"+"_HW_R"+a+"."+bc+"."+de
         elif self.product in ["S-010W-AV2A-1","S-010W-AV2A-2"] and self.province == "cmsh":
             self.hwid=self.product+"_HW_"+a+"."+bc+"."+de
         elif self.product == "S-010W-AV2A" and self.province == "cujc":
             self.hwid="1.01.01"
         elif self.chiptype == "S905L3" and self.product == "RG020ET-CA" and self.province == "cthq":
-            self.hwid="99008002L3B61803AVA10301"
+            self.hwid="V1.0.0"
         else:
             self.hwid=self.product+"_HW_R"+a+"."+bc+"."+de
 				
@@ -862,13 +872,13 @@ if __name__ == "__main__":
     
 #   Test case is like 
 #   python intmapext.py getExtVer 'S-010W-A' RK3228B RTL zy nolauncher ctnx 
-#   or
-#   python intmapext.py getIntVer RK3228B AP6356S
 #   or 
+#   python intmapext.py getIntVer 'S-010W-A' RK3228B RTL zy nolauncher ctnx
+#   or
 #   python intmapext.py getExtStr 'S-010W-AV2S' RK3228H NOWIFI zy huawei cunm 0 3
 #   or
 #   python intmapext.py getInnerStr S-010W-AV2S RK3228H NOWIFI zy fenghuo cunm 0 3
-#       Error case
-#   python intmapext.py getIntVer RK3228B RTL
-#   python intmapext.py getExtVer 'S-010W-A' RK3228B RTL zy nolauncher ctnx
+#   or
+#   python intmapext.py getHwId S-010W-AV2 RK3228H RTL8822BS zy nolauncher cusd 1 3
+
 

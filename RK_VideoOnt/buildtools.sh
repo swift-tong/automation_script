@@ -8,6 +8,7 @@
 
 apkpackage=""
 launcher=""
+signcheck="sign"
 ToolHelp () {
     echo "**************************************************************************"
     echo "You must first input the realted vendor and province, then:"
@@ -280,6 +281,21 @@ GetApkpackage(){
         apkpackage=`ls -t *.rar | head -n1`
     fi	
 }
+
+JudgeSign(){
+    echo "Please select do you need to signed the apk"
+    echo " ############################"
+    echo "      sign(1) notsign(2)  "
+    echo " ############################" 
+    read ans
+    if [ $ans = "sign" ] || [ $ans = "1" ];then
+        signcheck="sign"
+    elif [ $ans = "notsign" ] || [ $ans = "2" ];then
+        signcheck="notsign"
+    fi
+    
+}
+
 #you must read input the to be handled file name
 HandlePrepare () {
     GetApkpackage
@@ -289,8 +305,9 @@ HandlePrepare () {
 
 HandlePreThird () {
     GetApkpackage
+    JudgeSign
     source prepare.sh
-    PrepareThird $apkpackage
+    PrepareThird $apkpackage $signcheck
 }
 
 HandleCopyfile() {
